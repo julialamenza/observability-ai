@@ -1,17 +1,20 @@
+from prometheus_client import start_http_server, Counter
 import time
-from prometheus_client import start_http_server, Gauge
 import os
 
-script_dir = os.path.dirname(os.path.abspath(__file__))
-LOG_FILE = os.path.join(script_dir, "../log-generator/app.log")
+LOG_FILE = "/app/log-generator/app.log"
 
-# Define Prometheus metrics
-error_count = Gauge('log_error_count', 'Number of ERROR log entries')
-warning_count = Gauge('log_warning_count', 'Number of WARNING log entries')
+# Ensure log file exists
+if not os.path.exists(LOG_FILE):
+    open(LOG_FILE, 'w').close()
+
+# Use Counter instead of Gauge
+error_count = Counter('log_error_count', 'Number of ERROR log entries')
+warning_count = Counter('log_warning_count', 'Number of WARNING log entries')
 
 def tail_log_file(path):
     with open(path, 'r') as f:
-        # Read from beginning
+        f.seek(0)  # read from beginning (better for initial testing)
         while True:
             line = f.readline()
             if not line:
@@ -20,20 +23,14 @@ def tail_log_file(path):
             yield line
 
 def monitor_logs():
-    err = 0
-    warn = 0
     for line in tail_log_file(LOG_FILE):
-        print("Reading line:", line.strip())  # cleaner print
+        print("Reading line:", line.strip())
         if "ERROR" in line:
-            err += 1
+            error_count.inc()
         elif "WARNING" in line:
-            warn += 1
-
-        # Update Prometheus metrics
-        error_count.set(err)
-        warning_count.set(warn)
+            warning_count.inc()
 
 if __name__ == "__main__":
-    print("Starting Prometheus exporter on http://localhost:8000/metrics")
+    print("🚀 Starting Prometheus log exporter on http://localhost:8000/metrics")
     start_http_server(8000)
     monitor_logs()

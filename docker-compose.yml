@@ -1,26 +1,73 @@
-
-version: '3'
+version: '3.8'
 
 services:
   prometheus:
-    image: prom/prometheus
-    container_name: prometheus
+    image: prom/prometheus:latest
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
     ports:
       - "9090:9090"
+    depends_on:
+      - log-exporter
+      - anomaly-detector
+    networks:
+      - observability
 
   grafana:
-    image: grafana/grafana
-    container_name: grafana
+    image: grafana/grafana:latest
     ports:
       - "3000:3000"
-    volumes:
-      - grafana-storage:/var/lib/grafana
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
+
+    volumes:
+      - grafana-storage:/var/lib/grafana
+      - ./grafana/dashboards:/var/lib/grafana/dashboards
+      - ./grafana/provisioning:/etc/grafana/provisioning
+    depends_on:
+      - prometheus
+    networks:
+      - observability
+
+  log-generator:
+    build:
+      context: ./log-generator
+    volumes:
+      - ./log-generator:/app
+    networks:
+      - observability
+
+  log-exporter:
+    build:
+      context: ./prometheus
+    volumes:
+      - ./log-generator:/app/log-generator
+    ports:
+      - "8000:8000"
+    depends_on:
+      - log-generator
+    networks:
+      - observability
+
+  anomaly-detector:
+    build:
+      context: ./ai
+    volumes:
+      - ./log-generator:/logs
+    working_dir: /app
+    command: python anomaly_detector.py
+    ports:
+      - "8100:8100"
+    depends_on:
+      - log-generator
+    networks:
+      - observability
+
 
 volumes:
   grafana-storage:
+
+networks:
+  observability:
+    driver: bridge
