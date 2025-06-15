@@ -4,41 +4,38 @@ This lab simulates a production-like environment for exploring observability and
 
 #### 📦 Components
 
-**Log Generator
-**
+**Log Generator**
 Continuously generates synthetic logs with INFO, WARNING, and ERROR levels.
 
-**Log Exporter
-**
+**Log Exporter**
 Reads the log file in real time and exposes log_error_count and log_warning_count metrics via HTTP for Prometheus.
 
 **Prometheus**
 
 Collects metrics from the log exporter and anomaly detector.
 
-**Grafana
-**
+**Grafana**
 Connects to Prometheus to visualize metrics with prebuilt dashboards.
 
-**Anomaly Detector **(optional)
+**Anomaly Detector**(optional)
 
 A Python service that scans logs for anomalies and exposes detection metrics to Prometheus.
 
 #### 🐳 How to Run the Stack
 
 Clone this repo and from the root directory, run:
-
+```
 docker-compose up --build
-
+```
 Access the Services:
 
-Grafana:[ http://localhost:3000]( http://localhost:3000 " http://localhost:3000")  (login: admin / admin)
+Grafana:[ http://localhost:3000](" http://localhost:3000")  (login: admin / admin)
 
-Prometheus: [http://localhost:9090](http://localhost:9090 "http://localhost:9090")
+Prometheus: [http://localhost:9090]("http://localhost:9090")
 
-Log Exporter Metrics: [http://localhost:8000/metrics](http://localhost:8000/metrics "http://localhost:8000/metrics")
+Log Exporter Metrics: [http://localhost:8000/metrics]("http://localhost:8000/metrics")
 
-Anomaly Detector Metrics: [http://localhost:8100/metrics](http://localhost:8100/metricshttp:// "http://localhost:8100/metrics")
+Anomaly Detector Metrics: [http://localhost:8100/metrics]("http://localhost:8100/metrics")
 
 #### 📊 Dashboards
 
@@ -46,7 +43,7 @@ Grafana is preconfigured to load dashboards from grafana/dashboards.
 
 To import manually:
 
-Open Grafana UI.
+**Open** Grafana UI.
 
 Go to **Dashboards** > Import.
 
@@ -82,21 +79,32 @@ These metrics are exposed on **:8100/metrics **and scraped by Prometheus.
 #### 📁 Project Structure📁 Project Structure
 
 
-**├── ai
-│   ├── anomaly.Dockerfile
-│   └── anomaly_detector.py
+```
+├── README.md
+├── ai
+│   ├── Dockerfile
+│   └── anomaly_detector.py
+├── app.log
 ├── docker-compose.yml
 ├── grafana
-│   ├── dashboard.json
-│   └── log_dashboard_with_alert.json
+│   ├── dashboards
+│   │   └── log_dashboard.json
+│   └── provisioning
+│       ├── dashboards
+│       │   └── dashboards.yml
+│       └── datasources
+│           └── datasource.yaml
 ├── log-generator
-│   ├── generate_logs.py
-│   └── generator.Dockerfile
-├── prometheus
-│   ├── exporter.Dockerfile
-│   ├── log_exporter.py
-│   └── prometheus.yml
-└── README.md**
+│   ├── Dockerfile
+│   ├── app.log
+│   ├── generate_logs.py
+│   └── log-generator
+│       └── app.log
+└── prometheus
+    ├── Dockerfile
+    ├── log_exporter.py
+    └── prometheus.yml
+```
 
 #### 🧠 Extend the Lab (TO DO)
 
