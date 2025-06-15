@@ -1,4 +1,4 @@
-# #### 🧪 Observability + AI Lab
+#### 🧪 Observability + AI Lab
 
 This lab simulates a production-like environment for exploring observability and anomaly detection using synthetic logs, Prometheus, Grafana, and a Python-based AI module.
 
