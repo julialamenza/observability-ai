@@ -29,7 +29,7 @@ docker-compose up --build
 ```
 Access the Services:
 
-Grafana:[ http://localhost:3000](" http://localhost:3000")  (login: admin / admin)
+Grafana:[ http://localhost:3000]("http://localhost:3000")  (login: admin / admin)
 
 Prometheus: [http://localhost:9090]("http://localhost:9090")
 
